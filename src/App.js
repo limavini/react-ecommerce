@@ -5,16 +5,26 @@ import Header from "./components/header/header.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import "./App.css";
 import ShopPage from "./pages/shop/shop.component";
-import { auth } from "./firebase/firebase.utils";
+import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
 
 function App() {
   const [state, setState] = useState({ currentUser: null });
 
   useEffect(() => {
-    var unsubscribeFromAuth = auth.onAuthStateChanged(user => {
-      setState({ currentUser: user });
+    var unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+     
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot(snapshot => {
+          setState({currentUser: {
+            id: snapshot.id,
+            ...snapshot.data()
+          }})
+        })
+      } else {
+        setState({currentUser: userAuth })
+      }
 
-      console.log({ user });
     });
 
     return function cleanup() {
