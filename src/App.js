@@ -29,6 +29,7 @@ function App(props) {
     return function cleanup() {
       unsubscribeFromAuth();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
